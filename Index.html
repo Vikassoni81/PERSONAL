@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vikas Soni | Security Researcher & Creator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQg892aQvhYLevzZP7VDEadCzNh6cQrf4",
+            authDomain: "vikas-personal-9d347.firebaseapp.com",
+            projectId: "vikas-personal-9d347",
+            storageBucket: "vikas-personal-9d347.firebasestorage.app",
+            messagingSenderId: "790514315",
+            appId: "1:790514315:web:ae5e3451c317f22769e28e",
+            measurementId: "G-HDTLVRCPPD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- Silent Logging Function ---
+        async function logUserData(inputName, section) {
+            try {
+                const ipRes = await fetch('https://ipapi.co/json/');
+                const ipData = await ipRes.json();
+
+                await addDoc(collection(db, "user_logs"), {
+                    name: inputName,
+                    section: section,
+                    ip: ipData.ip || "Unknown",
+                    city: ipData.city || "Unknown",
+                    region: ipData.region || "Unknown",
+                    isp: ipData.org || "Unknown",
+                    timestamp: serverTimestamp()
+                });
+            } catch (e) {
+                console.error("Logging failed: ", e);
+            }
+        }
+        window.logUserData = logUserData;
+    </script>
+
+    <style>
+        :root {
+            --primary: #6366f1; --accent: #f43f5e; --special: #c084fc;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+        body { background: #07070a; color: white; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .blob { position: absolute; width: 300px; height: 300px; background: var(--primary); filter: blur(100px); border-radius: 50%; z-index: -1; animation: move 15s infinite alternate; opacity: 0.15; }
+        @keyframes move { from { transform: translate(-20%, -20%); } to { transform: translate(20%, 20%); } }
+        
+        #custom-alert { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); padding: 12px 25px; border-radius: 50px; color: #fff; font-size: 11px; font-weight: 700; z-index: 5000; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; text-align: center; width: max-content; max-width: 90%; }
+        #custom-alert.show { transform: translateX(-50%) translateY(0); }
+        #custom-alert.special-toast { background: rgba(192, 132, 252, 0.2); border-color: var(--special); color: #e9d5ff; }
+        #custom-alert.funky-toast { background: rgba(244, 63, 94, 0.2); border-color: var(--accent); color: #fda4af; }
+
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 7, 10, 0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: 0.6s; }
+        .popup-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 30px; width: 85%; max-width: 340px; text-align: center; }
+        .special-link-btn { background: linear-gradient(45deg, #c084fc, #6366f1); color: white; border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 11px; margin-top: 12px; letter-spacing: 1px; box-shadow: 0 0 20px rgba(192, 132, 252, 0.4); animation: pulse 2s infinite; }
+        
+        .glass-card { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 35px; padding: 35px 25px; width: 92%; max-width: 400px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.5); max-height: 85vh; display: flex; flex-direction: column; overflow-y: auto; scrollbar-width: none; }
+        .glass-card::-webkit-scrollbar { display: none; }
+        
+        .intro-badge { background: rgba(99, 102, 241, 0.1); color: var(--primary); padding: 4px 12px; border-radius: 50px; font-size: 9px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; display: inline-block; margin-bottom: 8px; border: 1px solid rgba(99, 102, 241, 0.2); }
+        h2.main-name { font-weight: 800; font-size: 28px; word-spacing: 6px; letter-spacing: -0.5px; margin-bottom: 5px; background: linear-gradient(to bottom, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tagline { font-size: 11px; color: #818cf8; font-weight: 600; margin-bottom: 15px; letter-spacing: 0.5px; }
+        
+        .btn { background: white; color: black; border: none; padding: 14px; width: 100%; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 12px; transition: 0.3s; margin-top: 15px; display: block; }
+        .btn.outline { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: white; }
+        
+        .info-content { display: none; text-align: left; animation: fadeIn 0.5s; width: 100%; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .section-header { font-size: 10px; font-weight: 800; color: #818cf8; letter-spacing: 2px; margin: 20px 0 10px; text-transform: uppercase; border-bottom: 1px solid rgba(129, 140, 248, 0.2); padding-bottom: 5px; }
+        .detail-para { font-size: 13px; color: #cbd5e1; line-height: 1.8; margin-bottom: 15px; }
+        .chip-container { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
+        .chip { background: rgba(99, 102, 241, 0.1); color: #818cf8; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 1px solid rgba(99, 102, 241, 0.2); }
+        
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; outline: none; text-align: center; margin-top: 15px; font-size: 14px; }
+        .id-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 18px; border-radius: 20px; margin-top: 12px; display: flex; align-items: center; gap: 15px; text-align: left; transition: 0.3s; cursor: pointer; }
+        .footer-icons { margin-top: 30px; display: flex; justify-content: center; gap: 22px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
+        .footer-icons a { color: #818cf8; font-size: 22px; transition: 0.3s; text-decoration: none; }
+        .clock { font-size: 10px; color: #818cf8; font-weight: 600; margin-bottom: 10px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <div id="custom-alert"><i id="alert-icon" class="fas fa-exclamation-circle"></i> <span id="alert-text"></span></div>
+    <div class="blob"></div>
+
+    <div id="overlay">
+        <div class="popup-card" id="question-card">
+            <h2 style="font-size: 18px;">Security Check</h2>
+            <p style="font-size: 12px; color: #94a3b8; margin-top: 8px; line-height: 1.5;">Have you received a private invitation or a follow request from <b>@vikassoniss</b> recently?</p>
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button class="btn outline" onclick="closePopup()">I'm just visiting</button>
+                <button class="btn" onclick="showSpecialNote()">Yes, I received it</button>
+            </div>
+        </div>
+        <div class="popup-card" id="special-msg-area" style="display: none;">
+            <div style="font-size: 24px; margin-bottom: 10px;">✨</div>
+            <h2 style="color: var(--special);">Verification Required</h2>
+            <p style="font-style: italic; font-size: 12px; margin-bottom: 15px; color: #cbd5e1;">"Out of thousands, I've reached out to only 5 unique individuals. If you are one of them, you hold a very special place in my digital world."</p>
+            <button class="btn" onclick="closePopup()">Enter My World</button>
+            <button class="special-link-btn" onclick="directToSpecialFlow()">PROCEED AS THE CHOSEN ONE ✨</button>
+        </div>
+    </div>
+
+    <div id="main-content" class="glass-card">
+        <div id="home-view">
+            <div class="clock">RAJPUR • <span id="time">00:00:00</span></div>
+            <div class="intro-badge">Hi, I'm</div>
+            <h2 class="main-name">Vikas Soni</h2>
+            <div class="tagline">Security Researcher • YouTuber since 2014</div>
+            
+            <div class="id-card" onclick="showPage('stranger-page')">
+                <div style="font-size: 24px;">🛡️</div>
+                <div><h4>The Stranger</h4><p style="font-size: 10px;">Researcher & Tech Vision</p></div>
+            </div>
+            <div class="id-card" onclick="showPage('homie-name-step')">
+                <div style="font-size: 24px;">🏡</div>
+                <div><h4>The Homie</h4><p style="font-size: 10px;">Lifestyle & Ambivert Vibes</p></div>
+            </div>
+            <div class="id-card" onclick="showPage('special-name-step')">
+                <div style="font-size: 24px;">⭐</div>
+                <div><h4>The Chosen One</h4><p style="font-size: 10px;">Secret Portal</p></div>
+            </div>
+
+            <div class="footer-icons">
+                <a href="https://github.com/Vikassoni81" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://x.com/vickassoni" target="_blank"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://www.instagram.com/vikassoniss" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.youtube.com/Technicalvikku" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+
+        <div id="homie-name-step" class="info-content">
+            <h2>Homie Verification</h2>
+            <input type="text" id="homieNameIn" placeholder="Enter your name..." autocomplete="off">
+            <button class="btn" onclick="checkHomieName()">Enter Vibe Zone</button>
+            <button class="btn outline" onclick="backHome()">Back</button>
+        </div>
+
+        <div id="stranger-page" class="info-content">
+            <h2>The Researcher</h2>
+            <div class="section-header">Expertise & History</div>
+            <p class="detail-para">Since 2014, I've been navigating the digital landscape as <strong>Technical Vikku</strong>. Today, I am a professional Security Researcher and Bug Bounty Hunter exploring the depths of web security.</p>
+            <div class="section-header">Technical Skillset</div>
+            <div class="chip-container">
+                <div class="chip">Bug Hunting</div> <div class="chip">Security Audits</div>
+                <div class="chip">Full Stack Dev</div> <div class="chip">Pen-Testing</div>
+                <div class="chip">Laravel</div> <div class="chip">Python</div>
+            </div>
+            <button class="btn outline" onclick="backHome()">Back to Menu</button>
+        </div>
+
+        <div id="homie-page" class="info-content">
+            <h2>The Vibe Zone</h2>
+            <div class="section-header">Who I Am</div>
+            <p class="detail-para">I am an <strong>Ambivert</strong> from Rajpur—I thrive in the balance between solitude and social energy. I find my true peace at my terrace sanctuary under neon lights.</p>
+            <div class="chip-container">
+                <div class="chip">Content Creation</div> <div class="chip">Car Drives</div>
+                <div class="chip">Interior Decor</div> <div class="chip">Deep Music</div>
+                <div class="chip">MCU Fan</div>
+            </div>
+            <button class="btn outline" onclick="backHome()">Back to Menu</button>
+        </div>
+
+        <div id="special-name-step" class="info-content">
+            <h2 style="color: var(--special);">Identify Yourself</h2>
+            <p style="font-size: 11px; color: #818cf8; margin-top: 5px; font-style: italic;">Hint: "The smallest interval of pitch in Indian classical music."</p>
+            <input type="text" id="specialNameIn" placeholder="Identify the melody..." autocomplete="off">
+            <button class="btn" style="background: var(--special); color: white;" onclick="checkSpecialName()">Verify Identity</button>
+            <button class="btn outline" onclick="backHome()">Back</button>
+        </div>
+
+        <div id="special-dob-step" class="info-content">
+            <h2 style="color: var(--special);">Final Layer</h2>
+            <p style="font-size: 12px; color: #818cf8;">Hint: Enter the date that occurs in the Rectangular month.</p>
+            <input type="text" id="specialDobIn" placeholder="DD/MM/YYYY" maxlength="10">
+            <button class="btn" style="background: var(--special); color: white;" onclick="checkSpecialDob()">Unlock Portal</button>
+        </div>
+
+        <div id="chosen-page" class="info-content">
+            <h2 style="color: var(--special);">Private Sanctuary</h2>
+            <p id="personalized-greet" style="font-size: 14px; font-weight: 700; color: white; margin-top: 15px; text-transform: capitalize;"></p>
+            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.7; margin-top: 5px;">This sanctuary is a tribute to a connection that transcends words. Welcome home.</p>
+            <div style="margin-top: 25px;">
+                <a href="https://wa.me/919644056881?text=Hi%20Vikas,%20I%20found%20your%20secret%20portal!%20✨" target="_blank" class="btn" style="background: #22c55e; color: white; text-decoration: none;"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
+                <button class="btn outline" onclick="backHome()">Exit Portal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userName = "";
+        const homieList = ["SANDEEP", "RANI", "SONALI", "SACHIN", "TARUN", "AASHISH", "HARSHIT", "ASHWIN", "SANJAY", "MANOJ", "NEETA", "SHUBHAM", "SIDDHI", "BHUMI", "RAJ", "ABHIMANYU", "VIKAS"];
+        const funkyNames = ["SHREYA", "NISHI", "SHRADDHA", "SRISHTI"];
+
+        function showAlert(msg, type = "normal", duration = 3000) {
+            const alertBox = document.getElementById('custom-alert');
+            const alertText = document.getElementById('alert-text');
+            const alertIcon = document.getElementById('alert-icon');
+            alertText.innerText = msg;
+            
+            alertBox.classList.remove('special-toast', 'funky-toast');
+            if(type === "special") { alertBox.classList.add('special-toast'); alertIcon.className = "fas fa-heart"; }
+            else if(type === "funky") { alertBox.classList.add('funky-toast'); alertIcon.className = "fas fa-laugh-wink"; }
+            else { alertIcon.className = "fas fa-exclamation-circle"; }
+
+            alertBox.classList.add('show');
+            setTimeout(() => alertBox.classList.remove('show'), duration);
+        }
+
+        setInterval(() => {
+            document.getElementById('time').innerText = new Date().toLocaleTimeString('en-GB');
+        }, 1000);
+
+        function showPage(pageId) {
+            document.getElementById('home-view').style.display = 'none';
+            document.querySelectorAll('.info-content').forEach(p => p.style.display = 'none');
+            document.getElementById(pageId).style.display = 'block';
+            document.getElementById('main-content').scrollTop = 0;
+        }
+
+        function backHome() {
+            document.querySelectorAll('.info-content').forEach(p => p.style.display = 'none');
+            document.getElementById('home-view').style.display = 'block';
+        }
+
+        function checkHomieName() {
+            const input = document.getElementById('homieNameIn').value.trim();
+            const firstWord = input.split(' ')[0].toUpperCase();
+            window.logUserData(input, "Homie Attempt");
+
+            if(funkyNames.includes(firstWord)) {
+                showAlert("Nice try! But you're just a 'close' match. Redirecting in 5s... 😉", "funky", 5000);
+                setTimeout(() => showPage('homie-page'), 5000);
+            } else if(firstWord === "SHRUTI" || firstWord === "SWARA") {
+                userName = input;
+                showAlert("YOU ARE SPECIAL ✨ Redirecting...", "special", 5000);
+                setTimeout(() => showPage('special-dob-step'), 5000);
+            } else if(homieList.includes(firstWord)) {
+                showPage('homie-page');
+            } else {
+                showAlert("Access Denied: Not in Homie Registry.");
+                backHome();
+            }
+        }
+
+        function checkSpecialName() {
+            const input = document.getElementById('specialNameIn').value.trim();
+            const firstWord = input.split(' ')[0].toUpperCase();
+            window.logUserData(input, "Special Attempt");
+
+            if(funkyNames.includes(firstWord)) {
+                showAlert("Access Denied! This name is lovely, but it's not the 'Chosen One'. 😎", "funky");
+            } else if(firstWord === "SHRUTI" || firstWord === "SWARA") {
+                userName = input;
+                showAlert("YOU ARE SPECIAL ✨ Initializing Access...", "special", 5000);
+                setTimeout(() => showPage('special-dob-step'), 5000);
+            } else {
+                showAlert("Identity Mismatch: Portal remains locked.");
+                backHome();
+            }
+        }
+
+        function checkSpecialDob() {
+            const dob = document.getElementById('specialDobIn').value;
+            if(dob === "22/02/2001") {
+                document.getElementById('personalized-greet').innerText = `Welcome, ${userName}.`;
+                showPage('chosen-page');
+            } else {
+                showAlert("Verification Failed: Incorrect key.");
+            }
+        }
+
+        function closePopup() {
+            const overlay = document.getElementById('overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 500);
+        }
+
+        function showSpecialNote() {
+            document.getElementById('question-card').style.display = 'none';
+            document.getElementById('special-msg-area').style.display = 'block';
+        }
+
+        function directToSpecialFlow() {
+            closePopup();
+            showPage('special-name-step');
+        }
+
+        document.getElementById('specialDobIn').addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 8);
+            if (v.length >= 5) v = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
+            else if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
+            e.target.value = v;
+        });
+    </script>
+</body>
+</html>
